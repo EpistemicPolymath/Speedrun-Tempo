@@ -1,0 +1,7 @@
+;; goal_src/user/poly/startup.gc
+
+(mi)                    ;; 1. Automatically build the game on REPL start
+(lt)                    ;; 2. Wait and listen for the game client to open
+;; og:run-below-on-listen
+(ml "goal_src/user/poly/goal-tempo.gc") ;; 3. Compile and load script ONLY after connecting!
+(tempo-start)           ;; 4. Immediately boot the coach!

@@ -1,0 +1,25 @@
+{
+  "numConnectToTargetAttempts": 5,
+  "appendKeybinds": true,
+  "keybinds": [
+    {
+      "modifier": "ctrl",
+      "key": "T",
+      "description": "Start/Reset Tempo Coach Process",
+      "command": "(tempo-start)"
+    },
+    {
+      "modifier": "ctrl",
+      "key": "O",
+      "description": "Stop Tempo Coach Process",
+      "command": "(tempo-stop)"
+    },
+    {
+      "modifier": "ctrl",
+      "key": "R",
+      "description": "Hot-Reload Tempo Script Changes",
+      "command": "(ml \"goal_src/user/poly/goal-tempo.gc\")"
+    }
+  ],
+  "perGameHistory": false
+}
