@@ -478,7 +478,7 @@
 
 (defmethod commit-to-file trainer-settings ((obj trainer-settings))
   "Save settings to the user's local Mods directory."
-  (format (clear *pc-temp-string-1*) "~S/Mods/trainer-settings.gc" *pc-settings-folder*)
+  (format (clear *pc-temp-string-1*) "~S/Mods/trainer-settings.gc" *pc-settings-folder*) ;; C:\Users\{USER}\AppData\Roaming\OpenGOAL\jak1\settings\Mods\
   (pc-mkdir-file-path *pc-temp-string-1*)
   (write-to-file obj *pc-temp-string-1*)
   (none)
