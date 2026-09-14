@@ -26,12 +26,12 @@
    (metronome-volume     float) ;; Audio volume (0.0 to 1.0)
    )
   (:methods ;; Declarations for I/O operations (file reading, file writing, memory resetting, and disk committing)
-    (new (symbol type) \_type\_)
-    (reset (\_type\_) none)
-    (read-from-file (\_type\_ string) symbol)
-    (commit-to-file (\_type\_) none)
-    (write-to-file (\_type\_ string) symbol)
-    (load-settings (\_type\_) int) 
+    (new (symbol type) _type_)
+    (reset (_type_) none)
+    (read-from-file (_type_ string) symbol)
+    (commit-to-file (_type_) none)
+    (write-to-file (_type_ string) symbol)
+    (load-settings (_type_) int) 
     ) 
 )
 
@@ -437,3 +437,87 @@
     )
   (none)
   )
+
+  ;; Helper methods for trainer-settings [Method System | OpenGOAL, Checkpoint Randomizer | OpenGOAL]
+(defmethod reset trainer-settings ((obj trainer-settings))
+"Reset trainer options to default values."
+  (set! (-> obj version) TRAINER_SETTINGS_VERSION)
+  (set! (-> obj trainer-enabled?) #t)
+  (set! (-> obj active-preset-idx) 0) ;; Default: PRJ Drill
+  (set! (-> obj target-bpm) 120) ;; Default: 120 BPM
+  (set! (-> obj metronome-volume) 0.5) ;; Default: 100% Volume
+  (none)
+  )
+
+(defmethod new trainer-settings ((allocation symbol) (type-to-make type)) 
+"Construct and automatically load trainer settings." 
+(let ((obj (object-new allocation type-to-make (the-as int (-> type-to-make size))))) 
+  (reset obj) 
+  (load-settings obj) 
+  obj) 
+)
+
+(defmethod write-to-file trainer-settings ((obj trainer-settings) (filename string)) 
+"Write settings to disk formatted as LISP expressions."
+(if (not filename)
+  (return #f))
+(let ((file (new 'stack 'file-stream filename 'write)))
+  (if (not (file-stream-valid? file))
+    (return #f))
+  (format file "(settings #x~X~%" (-> obj version))
+  (format file " (trainer-enabled? ~A)~%" (-> obj trainer-enabled?))
+  (format file " (active-preset-idx ~D)~%" (-> obj active-preset-idx))
+  (format file " (target-bpm ~D)~%" (-> obj target-bpm))
+  (format file " (metronome-volume ~F)~%" (-> obj metronome-volume))
+  (format file " )~%")
+  (file-stream-close file)
+  )
+(format 0 "[Trainer] Settings written to ~A~%" filename)
+#t
+)
+
+(defmethod commit-to-file trainer-settings ((obj trainer-settings))
+  "Save settings to the user's local Mods directory."
+  (format (clear *pc-temp-string-1*) "~S/Mods/trainer-settings.gc" *pc-settings-folder*)
+  (pc-mkdir-file-path *pc-temp-string-1*)
+  (write-to-file obj *pc-temp-string-1*)
+  (none)
+)
+
+(defmethod read-from-file trainer-settings ((obj trainer-settings) (filename string))
+  "Parse settings file from disk."
+  (if (not filename)
+    (return #f))
+  (let ((file (new 'stack 'file-stream filename 'read)))
+    (when (not (file-stream-valid? file))
+      (return #f))
+    (with-settings-scope (file)
+      (case-str (file-stream-read-word file)
+        (("settings")
+        (file-stream-read-int file) ;; Skip version check for now
+        (dosettings (file)
+          (case-str *pc-temp-string-1*
+            (("trainer-enabled?") (set! (-> obj trainer-enabled?) (file-stream-read-symbol file)))
+            (("active-preset-idx") (set! (-> obj active-preset-idx) (file-stream-read-int file)))
+            (("target-bpm") (set! (-> obj target-bpm) (file-stream-read-int file)))
+            (("metronome-volume") (set! (-> obj metronome-volume) (file-stream-read-float file)))
+          )
+        )
+      )
+    )
+  )
+  (file-stream-close file)
+  )
+  (format 0 "[Trainer] Settings loaded from ~A~%" filename)
+  #t 
+  )
+
+(defmethod load-settings trainer-settings ((obj trainer-settings))
+  "Locate and load settings from disk if present."
+  (format (clear *pc-temp-string-1*) "~S/Mods/trainer-settings.gc" *pc-settings-folder*)
+  (if (pc-filepath-exists? *pc-temp-string-1*)
+    (unless (read-from-file obj *pc-temp-string-1*)
+      (reset obj))
+    (reset obj))
+  0
+)
