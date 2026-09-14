@@ -16,7 +16,7 @@
    )
   )
 
-(define TRAINER\_SETTINGS\_VERSION #x1) ;; Version header for config file validation
+(define TRAINER_SETTINGS_VERSION #x1) ;; Version header for config file validation
 
 (deftype trainer-settings (basic)
    ((version             uint64)
@@ -36,7 +36,7 @@
 )
 
 ;; Global instance pointer 
-(define \*trainer-settings\* (the-as trainer-settings #f))
+(define *trainer-settings* (the-as trainer-settings #f))
 
 ;; Global variables to track state [Language basics]
 (define *tempo-process* (the-as handle #f))
