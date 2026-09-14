@@ -338,6 +338,11 @@
   "2001": "<PAD_CIRCLE>",
   "2002": "<PAD_X>",
   "2003": "<PAD_SQUARE>",
-  
+
+  "2004": "RHYTHM COACH", 
+  "2005": "ENABLE TRAINER", 
+  "2006": "DRILL PRESET", 
+  "2007": "TARGET BPM",
+
   "3000": "SAVE AND LOAD GAME"
 }

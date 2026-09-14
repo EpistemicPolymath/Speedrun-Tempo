@@ -911,6 +911,12 @@
   (pad-x #x2002)
   (pad-square #x2003)
 
+  ;; Rhythm Coach Mod Extensions
+  (rhythm-coach #x2004) ;; Submenu title
+  (trainer-enabled #x2005) ;; Toggle option label
+  (trainer-preset #x2006) ;; Drill preset selector label
+  (trainer-bpm #x2007) ;; BPM slider label
+
   (save-and-load-game #x3000)
   ;; GAME-TEXT-ID ENUM ENDS
   )
