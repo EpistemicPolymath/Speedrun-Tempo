@@ -1,5 +1,6 @@
 ;; goal_src/user/goal-tempo.gc
 
+
 ;; 1. Define our custom process type with heap fields to prevent stack overflows! [Process and State, Type system]
 (deftype tempo-coach-process (process)
   ((last-beat-idx       int32)
@@ -14,6 +15,28 @@
    (played-beat-3       symbol)
    )
   )
+
+(define TRAINER\_SETTINGS\_VERSION #x1) ;; Version header for config file validation
+
+(deftype trainer-settings (basic)
+   ((version             uint64)
+   (trainer-enabled?     symbol) ;; #t or #f toggle
+   (active-preset-idx    int32) ;; 0 = PRJ, 1 = Ledge Boost, 2 = Extended, etc.
+   (target-bpm           int32) ;; Target tempo for metronome
+   (metronome-volume     float) ;; Audio volume (0.0 to 1.0)
+   )
+  (:methods ;; Declarations for I/O operations (file reading, file writing, memory resetting, and disk committing)
+    (new (symbol type) \_type\_)
+    (reset (\_type\_) none)
+    (read-from-file (\_type\_ string) symbol)
+    (commit-to-file (\_type\_) none)
+    (write-to-file (\_type\_ string) symbol)
+    (load-settings (\_type\_) int) 
+    ) 
+)
+
+;; Global instance pointer 
+(define \*trainer-settings\* (the-as trainer-settings #f))
 
 ;; Global variables to track state [Language basics]
 (define *tempo-process* (the-as handle #f))
